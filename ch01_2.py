@@ -50,6 +50,7 @@ plt.title("Did the user's texting habits change over time?")
 plt.xlim(0, n_count_data);
 
 #plt.show()
+###############################################################
 
 import pymc as pm
 
@@ -59,6 +60,7 @@ lambda_1 = pm.Exponential("lambda_1", alpha)
 lambda_2 = pm.Exponential("lambda_2", alpha)
 
 tau = pm.DiscreteUniform("tau", lower=0, upper=n_count_data)
+#tau = pm.DiscreteUniform("tau", lower=0, upper=44)
 
 print("Random output:", tau.random(), tau.random(), tau.random())
 
@@ -114,3 +116,30 @@ plt.xlabel(r"$\tau$ (in days)")
 plt.ylabel("probability");
 
 plt.show()
+
+#########################################################
+
+N = tau_samples.shape[0]
+expected_texts_per_day = np.zeros(n_count_data)
+
+for day in range(0, n_count_data):
+	ix = day < tau_samples
+	
+	expected_texts_per_day[day] = (lambda_1_samples[ix].sum() + lambda_2_samples[-ix].sum()) / N
+	
+plt.plot(range(n_count_data), expected_texts_per_day, lw = 4, color= "#E24A33",
+	label = "Expected number of text messages recieved")
+plt.xlim(0, n_count_data)
+plt.ylim(0, 60)
+plt.xlabel("Day")
+plt.ylabel("Number of text messages")
+plt.title("Number 0f text messages recieved versus xpected number recieeved")
+plt.bar(np.arange(len(count_data)), count_data, color= "#348ABD", alpha = 0.65,
+	label = "Observed text mesages per dat")
+plt.legend(loc="upper left")
+plt.show()
+
+
+
+
+
